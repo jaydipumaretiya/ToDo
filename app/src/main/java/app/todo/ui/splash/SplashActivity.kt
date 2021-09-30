@@ -18,5 +18,6 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
         } else {
             startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
         }
+        finishAffinity()
     }
 }

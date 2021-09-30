@@ -41,27 +41,16 @@ abstract class BaseActivity(layoutResId: Int) : AppCompatActivity(layoutResId) {
 
     protected fun setLinearRecyclerView(
         recyclerView: RecyclerView,
-        reverseLayout: Boolean
+        orientation: Int
     ): RecyclerView {
         val linearLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(
             this,
-            RecyclerView.VERTICAL,
-            reverseLayout
+            orientation,
+            false
         )
         recyclerView.setHasFixedSize(false)
         recyclerView.isNestedScrollingEnabled = false
         recyclerView.layoutManager = linearLayoutManager
-        return recyclerView
-    }
-
-    protected fun setGridRecyclerView(
-        recyclerView: RecyclerView,
-        spanCount: Int
-    ): RecyclerView {
-        val gridLayoutManager = androidx.recyclerview.widget.GridLayoutManager(this, spanCount)
-        recyclerView.setHasFixedSize(false)
-        recyclerView.isNestedScrollingEnabled = false
-        recyclerView.layoutManager = gridLayoutManager
         return recyclerView
     }
 

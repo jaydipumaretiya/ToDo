@@ -1,63 +1,60 @@
 package app.todo.ui.home
 
-import androidx.lifecycle.ViewModelProvider
+import android.content.Intent
+import android.view.Menu
+import android.view.MenuItem
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.RecyclerView
 import app.todo.R
+import app.todo.data.entity.ToDoEntity
+import app.todo.data.viewmodel.ToDoViewModel
 import app.todo.databinding.ActivityHomeBinding
-import app.todo.network.RetrofitBuilder
 import app.todo.ui.base.BaseActivity
 import app.todo.ui.base.delegate.viewBinding
-import app.todo.ui.login.viewmodel.LoginViewModel
+import app.todo.util.Constants
+import app.todo.util.TodoClickListener
 
-class HomeActivity : BaseActivity(R.layout.activity_login) {
+class HomeActivity : BaseActivity(R.layout.activity_home), TodoClickListener {
 
     private val binding by viewBinding(ActivityHomeBinding::inflate)
-    private lateinit var viewModel: LoginViewModel
-
-    override fun setContent() {
-        viewModel = ViewModelProvider(
-            this,
-            HomeViewModelFactory(RetrofitBuilder.apiInterface)
-        ).get(LoginViewModel::class.java)
+    private val toDoViewModel: ToDoViewModel by lazy {
+        ViewModelProviders.of(this).get(ToDoViewModel::class.java)
     }
 
-//    private fun setupUI() {
-//        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-//        adapter = MainAdapter(arrayListOf())
-//        binding.recyclerView.addItemDecoration(
-//            DividerItemDecoration(
-//                binding.recyclerView.context,
-//                (binding.recyclerView.layoutManager as LinearLayoutManager).orientation
-//            )
-//        )
-//        binding.recyclerView.adapter = adapter
-//    }
-//
-//    private fun setupObservers() {
-//        viewModel.login("eve.holt@reqres.in", "cityslicka").observe(this, {
-//            it?.let { resource ->
-//                when (resource.status) {
-//                    Status.SUCCESS -> {
-//                        binding.recyclerView.visibility = View.VISIBLE
-//                        binding.progressBar.visibility = View.GONE
-//                        resource.data?.let { users ->
-////                            retrieveList(users)
-//                        }
-//                    }
-//                    Status.ERROR -> {
-//                        binding.recyclerView.visibility = View.VISIBLE
-//                        binding.progressBar.visibility = View.GONE
-//                        Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
-//                    }
-//                    Status.LOADING -> {
-//                        binding.progressBar.visibility = View.VISIBLE
-//                        binding.recyclerView.visibility = View.GONE
-//                    }
-//                }
-//            }
-//        })
-//    }
-//
-//    private fun retrieveList(token: String) {
-//
-//    }
+    override fun setContent() {
+        setLinearRecyclerView(
+            binding.rvRecyclerView,
+            RecyclerView.VERTICAL
+        )
+        val adapter = TodoAdapter(ArrayList(), this)
+        toDoViewModel.fetchTodoList.observe(this@HomeActivity, { groupEntity ->
+            groupEntity?.let {
+                adapter.refreshTodoList(it)
+                binding.rvRecyclerView.adapter = adapter
+            }
+        })
+    }
+
+    override fun onToDoClicked(toDoEntity: ToDoEntity) {
+        val intent = Intent(this@HomeActivity, AddTodoActivity::class.java)
+        intent.putExtra(Constants.EXTRA_TODO, toDoEntity)
+        startActivity(intent)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_add, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menuAddNote -> {
+                startActivity(
+                    Intent(this@HomeActivity, AddTodoActivity::class.java)
+                )
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 }

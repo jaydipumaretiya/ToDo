@@ -44,7 +44,8 @@ class LoginActivity : BaseActivity(R.layout.activity_login) {
                 return
             }
             else -> {
-                login()
+                if (isNetworkConnected)
+                    login()
             }
         }
     }

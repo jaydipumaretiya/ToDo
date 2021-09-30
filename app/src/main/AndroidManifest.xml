@@ -31,6 +31,10 @@
         <activity
             android:name=".ui.home.HomeActivity"
             android:exported="true" />
+
+        <activity
+            android:name=".ui.home.AddTodoActivity"
+            android:exported="true" />
     </application>
 
 </manifest>
