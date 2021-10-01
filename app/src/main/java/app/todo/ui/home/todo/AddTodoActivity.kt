@@ -53,7 +53,7 @@ class AddTodoActivity : BaseActivity(R.layout.activity_add_todo),
             if (toDoEntity!!.types == 0) {
                 binding.rbDaily.isChecked = true
                 binding.rbWeekly.isChecked = false
-            } else if (type == 1) {
+            } else if (toDoEntity!!.types == 1) {
                 binding.rbDaily.isChecked = false
                 binding.rbWeekly.isChecked = true
             }
