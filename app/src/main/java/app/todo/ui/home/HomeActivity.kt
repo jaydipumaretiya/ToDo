@@ -3,6 +3,7 @@ package app.todo.ui.home
 import android.content.Intent
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import app.todo.R
@@ -43,7 +44,15 @@ class HomeActivity : BaseActivity(R.layout.activity_home), TodoClickListener {
     }
 
     override fun onDeleteClicked(toDoEntity: ToDoEntity) {
-        toDoViewModel.deleteTodo(toDoEntity)
+        AlertDialog.Builder(this@HomeActivity)
+            .setTitle(getString(R.string.delete_todo_title))
+            .setMessage(getString(R.string.delete_todo_message))
+            .setPositiveButton(android.R.string.ok) { dialog, which ->
+                dialog.cancel()
+                toDoViewModel.deleteTodo(toDoEntity)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

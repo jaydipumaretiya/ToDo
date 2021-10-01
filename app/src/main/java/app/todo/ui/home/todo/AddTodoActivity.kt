@@ -43,7 +43,7 @@ class AddTodoActivity : BaseActivity(R.layout.activity_add_todo),
 
         if (intent.hasExtra(Constants.EXTRA_TODO)) {
             toDoEntity = intent.getSerializableExtra(Constants.EXTRA_TODO) as ToDoEntity
-            binding.btnAddUpdate.text = getString(R.string.update)
+            binding.btnCreate.text = getString(R.string.update)
 
             binding.edtTitle.setText(toDoEntity!!.title)
             binding.edtDescription.setText(toDoEntity!!.description)
@@ -75,7 +75,7 @@ class AddTodoActivity : BaseActivity(R.layout.activity_add_todo),
             choseDate()
         }
 
-        binding.btnAddUpdate.setOnClickListener {
+        binding.btnCreate.setOnClickListener {
             if (toDoEntity == null) {
                 toDoEntity = ToDoEntity()
             }

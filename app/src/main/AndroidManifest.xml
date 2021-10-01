@@ -39,7 +39,13 @@
             android:name=".ui.home.todo.AddTodoActivity"
             android:exported="true" />
 
-        <receiver android:name=".receivers.AlarmReceiver" />
+        <receiver
+            android:name=".receivers.AlarmReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.ALARM_CHANGED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
