@@ -14,7 +14,7 @@ interface ToDoDao {
     fun updateTodo(toDoEntity: ToDoEntity)
 
     @Delete
-    fun delete(toDoEntity: ToDoEntity)
+    fun deleteTodo(toDoEntity: ToDoEntity)
 
     @Query("SELECT * FROM todo_master")
     fun fetchToDoList(): LiveData<List<ToDoEntity>>

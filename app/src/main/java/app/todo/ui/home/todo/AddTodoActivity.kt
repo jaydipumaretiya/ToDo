@@ -1,7 +1,12 @@
-package app.todo.ui.home
+package app.todo.ui.home.todo
 
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.util.Log
 import android.widget.DatePicker
 import android.widget.TimePicker
@@ -10,12 +15,12 @@ import app.todo.R
 import app.todo.data.entity.ToDoEntity
 import app.todo.data.viewmodel.ToDoViewModel
 import app.todo.databinding.ActivityAddTodoBinding
+import app.todo.receivers.AlarmReceiver
 import app.todo.ui.base.BaseActivity
 import app.todo.ui.base.delegate.viewBinding
 import app.todo.util.Constants
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 class AddTodoActivity : BaseActivity(R.layout.activity_add_todo),
     DatePickerDialog.OnDateSetListener,
@@ -23,9 +28,10 @@ class AddTodoActivity : BaseActivity(R.layout.activity_add_todo),
 
     private val binding by viewBinding(ActivityAddTodoBinding::inflate)
     private var toDoEntity: ToDoEntity? = null
-    private var cal = Calendar.getInstance()
+    private var calendar = Calendar.getInstance()
     private var type = 0
     private lateinit var simpleDateFormat: SimpleDateFormat
+    private var intervalMilliseconds: Long = 24 * 60 * 60 * 1000
 
     private val toDoViewModel: ToDoViewModel by lazy {
         ViewModelProviders.of(this).get(ToDoViewModel::class.java)
@@ -56,9 +62,11 @@ class AddTodoActivity : BaseActivity(R.layout.activity_add_todo),
             when (checkedId) {
                 R.id.rbDaily -> {
                     type = 0
+                    intervalMilliseconds = 24 * 60 * 60 * 1000
                 }
                 R.id.rbWeekly -> {
                     type = 1
+                    intervalMilliseconds = 7 * 24 * 60 * 60 * 1000
                 }
             }
         }
@@ -75,46 +83,82 @@ class AddTodoActivity : BaseActivity(R.layout.activity_add_todo),
             toDoEntity!!.title = binding.edtTitle.text.toString()
             toDoEntity!!.description = binding.edtDescription.text.toString()
             toDoEntity!!.types = type
-            toDoEntity!!.dateTime = cal.time
+            toDoEntity!!.dateTime = calendar.time
 
             Log.e("Type", "" + type)
 
             toDoViewModel.addTodo(toDoEntity!!)
-            finish()
+            setAlarm()
         }
+    }
+
+    private fun setAlarm() {
+        val intent = Intent(baseContext, AlarmReceiver::class.java)
+        intent.putExtra(Constants.EXTRA_ALARM_ID, false)
+
+        val pendingIntent =
+            PendingIntent.getBroadcast(baseContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
+
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
+                alarmManager.setInexactRepeating(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis,
+                    intervalMilliseconds,
+                    pendingIntent
+                )
+            }
+            else -> {
+                alarmManager.setRepeating(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis,
+                    intervalMilliseconds,
+                    pendingIntent
+                )
+            }
+        }
+
+        val intentt = Intent("android.intent.action.ALARM_CHANGED")
+        intentt.putExtra("alarmSet", true)
+        sendBroadcast(intentt)
+
+        finish()
     }
 
     private fun choseDate() {
         DatePickerDialog(
             this@AddTodoActivity,
             this@AddTodoActivity,
-            cal.get(Calendar.YEAR),
-            cal.get(Calendar.MONTH),
-            cal.get(Calendar.DAY_OF_MONTH)
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
         ).show()
     }
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        cal.set(Calendar.YEAR, year)
-        cal.set(Calendar.MONTH, month)
-        cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+        calendar.set(Calendar.YEAR, year)
+        calendar.set(Calendar.MONTH, month)
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
         TimePickerDialog(
             this@AddTodoActivity,
             this@AddTodoActivity,
-            cal.get(Calendar.HOUR),
-            cal.get(Calendar.MINUTE),
+            calendar.get(Calendar.HOUR),
+            calendar.get(Calendar.MINUTE),
             false
         ).show()
     }
 
     override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-        cal.set(Calendar.HOUR, hourOfDay)
-        cal.set(Calendar.MINUTE, minute)
+        calendar.set(Calendar.HOUR, hourOfDay)
+        calendar.set(Calendar.MINUTE, minute)
         updateDateInView()
     }
 
     private fun updateDateInView() {
-        binding.tvSelectDateTime.text = simpleDateFormat.format(cal.time)
+        binding.tvSelectDateTime.text = simpleDateFormat.format(calendar.time)
     }
 }

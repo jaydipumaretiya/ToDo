@@ -34,6 +34,9 @@ class TodoAdapter(
             binding.apply {
                 tvTitle.text = toDoEntity.title
                 tvDescription.text = toDoEntity.description
+                ivDelete.setOnClickListener {
+                    todoClickListener.onDeleteClicked(toDoEntity)
+                }
 
                 with(binding.root) {
                     setOnClickListener {

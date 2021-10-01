@@ -28,8 +28,8 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
     val fetchTodoList: LiveData<List<ToDoEntity>>
 
     init {
-        val expenseDao = AppDatabase.getDatabase(application, scope).todoDao()
-        repository = ToDoRepository(expenseDao)
+        val toDoDao = AppDatabase.getDatabase(application, scope).todoDao()
+        repository = ToDoRepository(toDoDao)
         fetchTodoList = repository.fetchTodoList
     }
 
@@ -41,8 +41,8 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
         repository.updateTodo(toDoEntity)
     }
 
-    fun deleteExpense(expenseId: String) = scope.launch(Dispatchers.IO) {
-//        repository.deleteExpense(expenseId)
+    fun deleteTodo(toDoEntity: ToDoEntity) = scope.launch(Dispatchers.IO) {
+        repository.deleteTodo(toDoEntity)
     }
 
     fun setGroupId(id: String) {

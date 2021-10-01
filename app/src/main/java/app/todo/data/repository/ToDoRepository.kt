@@ -21,13 +21,8 @@ class ToDoRepository(private val toDoDao: ToDoDao) {
         toDoDao.updateTodo(toDoEntity)
     }
 
-////    @WorkerThread
-////    fun fetchTotalGroupExpense(groupId: String): LiveData<BigDecimal> {
-////        return toDoDao.fetchTotalGroupExpense(groupId)
-////    }
-//
-//    @WorkerThread
-//    fun fetchGroupMember(groupId: String): LiveData<List<ToDoEntity>> {
-//        return toDoDao.fetchGroupExpanse(groupId)
-//    }
+    @WorkerThread
+    fun deleteTodo(toDoEntity: ToDoEntity) {
+        return toDoDao.deleteTodo(toDoEntity)
+    }
 }

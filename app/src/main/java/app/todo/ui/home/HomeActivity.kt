@@ -11,6 +11,7 @@ import app.todo.data.viewmodel.ToDoViewModel
 import app.todo.databinding.ActivityHomeBinding
 import app.todo.ui.base.BaseActivity
 import app.todo.ui.base.delegate.viewBinding
+import app.todo.ui.home.todo.AddTodoActivity
 import app.todo.util.Constants
 import app.todo.util.TodoClickListener
 
@@ -39,6 +40,10 @@ class HomeActivity : BaseActivity(R.layout.activity_home), TodoClickListener {
         val intent = Intent(this@HomeActivity, AddTodoActivity::class.java)
         intent.putExtra(Constants.EXTRA_TODO, toDoEntity)
         startActivity(intent)
+    }
+
+    override fun onDeleteClicked(toDoEntity: ToDoEntity) {
+        toDoViewModel.deleteTodo(toDoEntity)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
