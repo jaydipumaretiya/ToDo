@@ -83,7 +83,7 @@ class AddTodoActivity : BaseActivity(R.layout.activity_add_todo),
 
     private fun validate() {
         when {
-            !binding.edtTitle.text!!.isValidEmail() -> {
+            binding.edtTitle.text!!.isEmpty() -> {
                 showToast(getString(R.string.message_valid_title))
                 return
             }

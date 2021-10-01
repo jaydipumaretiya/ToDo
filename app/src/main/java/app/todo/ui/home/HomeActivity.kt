@@ -3,6 +3,7 @@ package app.todo.ui.home
 import android.content.Intent
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
@@ -29,10 +30,17 @@ class HomeActivity : BaseActivity(R.layout.activity_home), TodoClickListener {
             RecyclerView.VERTICAL
         )
         val adapter = TodoAdapter(ArrayList(), this)
-        toDoViewModel.fetchTodoList.observe(this@HomeActivity, { groupEntity ->
-            groupEntity?.let {
-                adapter.refreshTodoList(it)
-                binding.rvRecyclerView.adapter = adapter
+        toDoViewModel.fetchTodoList.observe(this@HomeActivity, { todoList ->
+            todoList?.let {
+                if (todoList.isEmpty()) {
+                    binding.tvMessage.visibility = View.VISIBLE
+                    binding.rvRecyclerView.visibility = View.GONE
+                } else {
+                    binding.tvMessage.visibility = View.GONE
+                    binding.rvRecyclerView.visibility = View.VISIBLE
+                    adapter.refreshTodoList(it)
+                    binding.rvRecyclerView.adapter = adapter
+                }
             }
         })
     }
@@ -66,6 +74,10 @@ class HomeActivity : BaseActivity(R.layout.activity_home), TodoClickListener {
                 startActivity(
                     Intent(this@HomeActivity, AddTodoActivity::class.java)
                 )
+                true
+            }
+            R.id.menuLogout -> {
+                sessionManager!!.logout(this@HomeActivity)
                 true
             }
             else -> super.onOptionsItemSelected(item)

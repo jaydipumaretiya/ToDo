@@ -8,6 +8,9 @@
     <string name="message_valid_password">Please enter valid password</string>
     <string name="message_valid_password_length">Please enter attlist 6 characters.</string>
 
+    <!--    Home-->
+    <string name="empty_todo_list">Empty Todo List</string>
+
     <!--    Add Todo-->
     <string name="add_todo">Add Todo</string>
     <string name="create">Create</string>
@@ -24,5 +27,8 @@
     <string name="message_valid_description">Description can\'t be empty</string>
     <string name="message_valid_type">Please select type daily or weekly</string>
     <string name="message_valid_date_and_time">Please select date and time</string>
+
+    <!--    Menu Item-->
+    <string name="logout">Logout</string>
 
 </resources>

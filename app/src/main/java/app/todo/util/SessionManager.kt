@@ -1,7 +1,10 @@
 package app.todo.util
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import app.todo.ui.login.LoginActivity
 
 class SessionManager(context: Context) {
 
@@ -44,4 +47,12 @@ class SessionManager(context: Context) {
             editor.putBoolean(LOGIN, isLogin)
             editor.commit()
         }
+
+    fun logout(activity: Activity) {
+        editor.clear()
+        editor.apply()
+
+        activity.startActivity(Intent(activity, LoginActivity::class.java))
+        activity.finishAffinity()
+    }
 }

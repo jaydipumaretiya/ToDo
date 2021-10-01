@@ -8,5 +8,15 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvMessage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fontFamily="@font/lato_light"
+        android:gravity="center"
+        android:text="@string/empty_todo_list"
+        android:textSize="28sp" />
 </LinearLayout>
