@@ -18,6 +18,7 @@ import app.todo.databinding.ActivityAddTodoBinding
 import app.todo.receivers.AlarmReceiver
 import app.todo.ui.base.BaseActivity
 import app.todo.ui.base.delegate.viewBinding
+import app.todo.util.AppUtils.isValidEmail
 import app.todo.util.Constants
 import java.text.SimpleDateFormat
 import java.util.*
@@ -29,7 +30,7 @@ class AddTodoActivity : BaseActivity(R.layout.activity_add_todo),
     private val binding by viewBinding(ActivityAddTodoBinding::inflate)
     private var toDoEntity: ToDoEntity? = null
     private var calendar = Calendar.getInstance()
-    private var type = 0
+    private var type = 2
     private lateinit var simpleDateFormat: SimpleDateFormat
     private var intervalMilliseconds: Long = 24 * 60 * 60 * 1000
 
@@ -76,20 +77,48 @@ class AddTodoActivity : BaseActivity(R.layout.activity_add_todo),
         }
 
         binding.btnCreate.setOnClickListener {
-            if (toDoEntity == null) {
-                toDoEntity = ToDoEntity()
-            }
-
-            toDoEntity!!.title = binding.edtTitle.text.toString()
-            toDoEntity!!.description = binding.edtDescription.text.toString()
-            toDoEntity!!.types = type
-            toDoEntity!!.dateTime = calendar.time
-
-            Log.e("Type", "" + type)
-
-            toDoViewModel.addTodo(toDoEntity!!)
-            setAlarm()
+            validate()
         }
+    }
+
+    private fun validate() {
+        when {
+            !binding.edtTitle.text!!.isValidEmail() -> {
+                showToast(getString(R.string.message_valid_title))
+                return
+            }
+            binding.edtDescription.text!!.isEmpty() -> {
+                showToast(getString(R.string.message_valid_description))
+                return
+            }
+            (type >= 2) -> {
+                showToast(getString(R.string.message_valid_type))
+                return
+            }
+            (binding.tvSelectDateTime.text.equals(getString(R.string.select_time_and_date))) -> {
+                showToast(getString(R.string.message_valid_date_and_time))
+                return
+            }
+            else -> {
+                addTodo()
+            }
+        }
+    }
+
+    private fun addTodo() {
+        if (toDoEntity == null) {
+            toDoEntity = ToDoEntity()
+        }
+
+        toDoEntity!!.title = binding.edtTitle.text.toString()
+        toDoEntity!!.description = binding.edtDescription.text.toString()
+        toDoEntity!!.types = type
+        toDoEntity!!.dateTime = calendar.time
+
+        Log.e("Type", "" + type)
+
+        toDoViewModel.addTodo(toDoEntity!!)
+        setAlarm()
     }
 
     private fun setAlarm() {

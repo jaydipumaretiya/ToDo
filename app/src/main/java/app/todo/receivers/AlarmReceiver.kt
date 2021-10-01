@@ -30,7 +30,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         alarmNotificationBuilder.setContentIntent(contentIntent)
         alarmNotificationManager.notify(1, alarmNotificationBuilder.build())
-//
+
 //        val notificationIntent = Intent(context, HomeActivity::class.java)
 //        notificationIntent.putExtra("clicked", "Notification Clicked")
 //        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -59,7 +59,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         Toast.makeText(
             context,
-            "If App in background then Just notify that alarm is started.",
+            "Todo notify that alarm is started.",
             Toast.LENGTH_LONG
         ).show()
     }
