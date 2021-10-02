@@ -28,7 +28,7 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
     val fetchTodoList: LiveData<List<ToDoEntity>>
 
     init {
-        val toDoDao = AppDatabase.getDatabase(application, scope).todoDao()
+        val toDoDao = AppDatabase.getDatabase(application).todoDao()
         repository = ToDoRepository(toDoDao)
         fetchTodoList = repository.fetchTodoList
     }

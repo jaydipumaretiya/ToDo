@@ -1,24 +1,23 @@
 package app.todo.ui.home.todo
 
-import android.app.AlarmManager
-import android.app.DatePickerDialog
-import android.app.PendingIntent
-import android.app.TimePickerDialog
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.widget.DatePicker
 import android.widget.TimePicker
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.ViewModelProviders
 import app.todo.R
 import app.todo.data.entity.ToDoEntity
 import app.todo.data.viewmodel.ToDoViewModel
 import app.todo.databinding.ActivityAddTodoBinding
 import app.todo.receivers.AlarmReceiver
+import app.todo.receivers.AlarmReceiver.Companion.NOTIFICATION_CHANNEL_ID
+import app.todo.receivers.AlarmReceiver.Companion.default_notification_channel_id
 import app.todo.ui.base.BaseActivity
 import app.todo.ui.base.delegate.viewBinding
-import app.todo.util.AppUtils.isValidEmail
 import app.todo.util.Constants
 import java.text.SimpleDateFormat
 import java.util.*
@@ -39,7 +38,7 @@ class AddTodoActivity : BaseActivity(R.layout.activity_add_todo),
     }
 
     override fun setContent() {
-        val myFormat = "dd/MM/yyyy HH:mm" // mention the format you need
+        val myFormat = "dd/MM/yyyy HH:mm"
         simpleDateFormat = SimpleDateFormat(myFormat, Locale.US)
 
         if (intent.hasExtra(Constants.EXTRA_TODO)) {
@@ -50,6 +49,7 @@ class AddTodoActivity : BaseActivity(R.layout.activity_add_todo),
             binding.edtDescription.setText(toDoEntity!!.description)
             binding.tvSelectDateTime.text = simpleDateFormat.format(toDoEntity!!.dateTime!!)
 
+            type = toDoEntity!!.types
             if (toDoEntity!!.types == 0) {
                 binding.rbDaily.isChecked = true
                 binding.rbWeekly.isChecked = false
@@ -122,12 +122,21 @@ class AddTodoActivity : BaseActivity(R.layout.activity_add_todo),
     }
 
     private fun setAlarm() {
-        val intent = Intent(baseContext, AlarmReceiver::class.java)
-        intent.putExtra(Constants.EXTRA_ALARM_ID, false)
+        val builder = NotificationCompat.Builder(this, default_notification_channel_id)
+        builder.setContentTitle(toDoEntity!!.title)
+        builder.setContentText(toDoEntity!!.description)
+        builder.setSmallIcon(R.drawable.ic_alarm)
+        builder.setChannelId(NOTIFICATION_CHANNEL_ID)
 
-        val pendingIntent =
-            PendingIntent.getBroadcast(baseContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
+        val notificationIntent = Intent(this, AlarmReceiver::class.java)
+        notificationIntent.putExtra(AlarmReceiver.NOTIFICATION_ID, 1)
+        notificationIntent.putExtra(AlarmReceiver.NOTIFICATION, builder.build())
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            0,
+            notificationIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
 
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -150,9 +159,9 @@ class AddTodoActivity : BaseActivity(R.layout.activity_add_todo),
             }
         }
 
-        val intentt = Intent("android.intent.action.ALARM_CHANGED")
-        intentt.putExtra("alarmSet", true)
-        sendBroadcast(intentt)
+        val alarmIntent = Intent("android.intent.action.ALARM_CHANGED")
+        alarmIntent.putExtra("alarmSet", true)
+        sendBroadcast(alarmIntent)
 
         finish()
     }

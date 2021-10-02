@@ -30,8 +30,7 @@ internal abstract class AppDatabase : RoomDatabase() {
         private val DATABASE_NAME = "ToDo"
 
         fun getDatabase(
-            context: Context,
-            scope: CoroutineScope
+            context: Context
         ): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -41,10 +40,8 @@ internal abstract class AppDatabase : RoomDatabase() {
                 )
                     .allowMainThreadQueries()
                     .fallbackToDestructiveMigration()
-//                    .addCallback(WordDatabaseCallback(scope))
                     .build()
                 INSTANCE = instance
-                // return instance
                 instance
             }
         }

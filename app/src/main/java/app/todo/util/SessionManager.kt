@@ -14,25 +14,12 @@ class SessionManager(context: Context) {
     private val preferencesName = "todo"
     private val LOGIN = "login"
     private val TOKEN = "token"
-    private val user = "user"
 
     init {
         sharedPreferences = context.getSharedPreferences(preferencesName, Context.MODE_PRIVATE)
         editor = sharedPreferences.edit()
         editor.apply()
     }
-
-//    var storedUser: User?
-//        get() {
-//            val json = sharedPreferences.getString(user, "")
-//            val type = object : TypeToken<User>() {
-//            }.type
-//            return Gson().fromJson(json, type)
-//        }
-//        set(storedAppData) {
-//            editor.putString(user, Gson().toJson(storedAppData))
-//            editor.commit()
-//        }
 
     var token: String?
         get() = sharedPreferences.getString(TOKEN, "")

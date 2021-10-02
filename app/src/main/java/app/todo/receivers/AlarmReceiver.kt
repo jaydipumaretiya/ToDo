@@ -1,66 +1,39 @@
 package app.todo.receivers
 
+import android.app.Notification
+import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
-import androidx.core.app.NotificationCompat
-import app.todo.R
-import app.todo.ui.home.HomeActivity
+import android.os.Build
 
 class AlarmReceiver : BroadcastReceiver() {
 
+    companion object {
+        var NOTIFICATION_ID = "notification-id"
+        var NOTIFICATION = "notification"
+        const val NOTIFICATION_CHANNEL_ID = "10001"
+        const val default_notification_channel_id = "default"
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
-        val alarmNotificationManager =
+        val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notification = intent.getParcelableExtra<Notification>(NOTIFICATION)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val notificationChannel = NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                "NOTIFICATION_CHANNEL_NAME",
+                importance
+            )
+            assert(notificationManager != null)
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
 
-        val contentIntent = PendingIntent.getActivity(
-            context, 0,
-            Intent(context, HomeActivity::class.java), 0
-        )
-
-        val alarmNotificationBuilder = NotificationCompat
-            .Builder(context, "channel_id")
-            .setContentTitle("Alarm")
-            .setSmallIcon(R.drawable.ic_alarm)
-            .setStyle(NotificationCompat.BigTextStyle().bigText("msg"))
-            .setContentText("msg")
-
-        alarmNotificationBuilder.setContentIntent(contentIntent)
-        alarmNotificationManager.notify(1, alarmNotificationBuilder.build())
-
-//        val notificationIntent = Intent(context, HomeActivity::class.java)
-//        notificationIntent.putExtra("clicked", "Notification Clicked")
-//        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-//        val mBuilder = NotificationCompat.Builder(context)
-//        val uri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-//        mBuilder.setContentTitle("Reminder")
-//        mBuilder.setContentText("You have new Reminders.")
-//        mBuilder.setTicker("New Reminder Alert!")
-//        mBuilder.setSmallIcon(R.drawable.ic_alarm)
-//        mBuilder.setSound(uri)
-//        mBuilder.setAutoCancel(true)
-//        val inboxStyle = NotificationCompat.InboxStyle()
-//        inboxStyle.setBigContentTitle("You have Reminders:")
-//        mBuilder.setStyle(inboxStyle)
-//        val resultIntent = Intent(context, HomeActivity::class.java)
-//
-//        val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
-//        stackBuilder.addParentStack(HomeActivity::class.java)
-//        stackBuilder.addNextIntent(resultIntent)
-//        val resultPendingIntent: PendingIntent = stackBuilder
-//            .getPendingIntent(0, PendingIntent.FLAG_CANCEL_CURRENT)
-//
-//        mBuilder.setContentIntent(resultPendingIntent)
-//        val mNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-//        mNotificationManager.notify(999, mBuilder.build())
-
-        Toast.makeText(
-            context,
-            "Todo notify that alarm is started.",
-            Toast.LENGTH_LONG
-        ).show()
+        val id = intent.getIntExtra(NOTIFICATION_ID, 0)
+        assert(notificationManager != null)
+        notificationManager.notify(id, notification)
     }
 }
